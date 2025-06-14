@@ -40,10 +40,10 @@ deca = DECA(config=deca_cfg, device=device)
 
 # Response model for FLAME parameters
 class FlameParams(BaseModel):
-    shape: list
-    expression: list
-    pose: list
-    tex: list
+    shape_params: list
+    expression_params: list
+    pose_params: list
+    tex_params: list
 
 @app.post("/deca-flame-params/", response_model=FlameParams)
 async def deca_flame_params(file: UploadFile = File(...)):
@@ -69,12 +69,12 @@ async def deca_flame_params(file: UploadFile = File(...)):
             codedict = deca.encode(input_tensor)
 
     # Extract parameters
-    shape = codedict['shape'].cpu().numpy().tolist()
-    expression = codedict['exp'].cpu().numpy().tolist()
-    pose = codedict['pose'].cpu().numpy().tolist()
-    tex = codedict['tex'].cpu().numpy().tolist()
+    shape = np.squeeze(codedict['shape'].cpu().numpy()).tolist()
+    expression = np.squeeze(codedict['exp'].cpu().numpy()).tolist()
+    pose = np.squeeze(codedict['pose'].cpu().numpy()).tolist()
+    tex = np.squeeze(codedict['tex'].cpu().numpy()).tolist()
 
     # Return as JSON
-    return {"shape": shape, "expression": expression, "pose": pose, "tex": tex}
+    return {"shape_params": shape, "expression_params": expression, "pose_params": pose, "tex_params": tex}
 
 # Run server with uvicorn: uvicorn app:app --host 0.0.0.0 --port 8002
